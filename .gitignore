@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+.npm-cache/
+.tsbuildinfo
+tsconfig.tsbuildinfo
+.DS_Store
+Thumbs.db
+*.log
+coverage/
