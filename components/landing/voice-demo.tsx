@@ -12,7 +12,7 @@ type TranscriptItem = {
 const AGENT_ID = "agent_8301knjjt31gfgya9qk2jq11h30j";
 const DEMO_PHONE = "(81) 3264-2080";
 const CALENDAR_URL =
-  "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FRecife&showPrint=0&src=MGE0NTUyZTA0MDkwMzYxMDUxZWMzOTQ1OTgwOWVhOGY2ZDk1NWU5ZTE5NTk1Y2Y1NGMxNDQzMjZmM2QzYjBlMUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23ef6c00";
+  "https://calendar.google.com/calendar/embed?src=61a30ff6ddf982134fa08cfc7a00e64c846c17b9e7d489f65f4982efbd636557%40group.calendar.google.com&ctz=America%2FRecife";
 
 const CONNECTION_TYPE = "websocket" as const;
 
