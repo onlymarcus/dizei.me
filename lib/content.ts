@@ -77,6 +77,29 @@ export const voiceHighlights = [
   },
 ] as const;
 
+export const triageHighlights = [
+  {
+    title: "Perguntas predefinidas antes do agendamento",
+    description:
+      "O Dizei pode seguir uma triagem inicial definida pela clinica para entender melhor o caso antes de oferecer horarios.",
+  },
+  {
+    title: "Respostas organizadas de forma clara",
+    description:
+      "As informacoes coletadas deixam de ficar espalhadas na conversa e passam a compor um contexto mais util para a equipe.",
+  },
+  {
+    title: "Resumo automatico da conversa",
+    description:
+      "A interacao pode gerar um resumo objetivo, facilitando o entendimento rapido do atendimento realizado e do que o paciente informou.",
+  },
+  {
+    title: "Mais contexto para o profissional",
+    description:
+      "Medico, fisioterapeuta, dentista e outros profissionais podem receber uma visao mais preparada da demanda antes do atendimento.",
+  },
+] as const;
+
 export const steps = [
   {
     number: "01",
@@ -104,6 +127,8 @@ export const benefits = [
   "Mais organizacao no primeiro contato com o cliente.",
   "Agendamento automatizado para reduzir atrito e retrabalho.",
   "Resposta imediata para duvidas recorrentes.",
+  "Triagem inicial com perguntas definidas pela clinica.",
+  "Resumo da conversa e contexto mais claro para a equipe.",
   "Imagem mais moderna e profissional para o negocio.",
 ] as const;
 
@@ -132,6 +157,11 @@ export const faqs = [
     question: "Ele pode atender em outros idiomas?",
     answer:
       "Sim. O produto pode operar em mais de 30 idiomas, o que amplia a flexibilidade para negocios com publicos diferentes.",
+  },
+  {
+    question: "Ele pode fazer triagem antes do agendamento?",
+    answer:
+      "Sim. O Dizei pode seguir perguntas predefinidas pela clinica antes do agendamento para coletar informacoes relevantes de forma organizada.",
   },
   {
     question: "Como funciona a demonstracao?",

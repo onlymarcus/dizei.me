@@ -9,6 +9,7 @@ import {
   painPoints,
   solutions,
   steps,
+  triageHighlights,
   voiceHighlights,
 } from "@/lib/content";
 
@@ -121,7 +122,9 @@ export default function Home() {
               <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
                 Atendimento por voz com resposta em milissegundos, tom natural e
                 suporte a mais de 30 idiomas para oferecer uma experiencia mais
-                fluida, moderna e profissional desde o primeiro contato.
+                fluida, moderna e profissional desde o primeiro contato. Alem de
+                agendar, o Dizei pode conduzir perguntas de triagem e organizar
+                um resumo util para a equipe.
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -228,8 +231,9 @@ export default function Home() {
                             Proximo passo do fluxo
                           </p>
                           <p className="mt-2 text-sm leading-6 text-slate-600">
-                            Confirmar dados, apresentar janelas de horario e
-                            finalizar o agendamento.
+                            Confirmar dados, conduzir a triagem inicial,
+                            apresentar janelas de horario e finalizar o
+                            agendamento.
                           </p>
                         </div>
                       </div>
@@ -377,6 +381,63 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="triagem" className="section-space pt-0">
+        <div className="shell">
+          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+            <div className="rounded-[34px] border border-slate-200 bg-white p-8 shadow-soft sm:p-10">
+              <span className="section-kicker">Triagem inteligente</span>
+              <h2 className="mt-4 text-balance text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                O agendamento pode chegar acompanhado de contexto, nao so de um horario.
+              </h2>
+              <p className="mt-5 text-base leading-7 text-slate-600 sm:text-lg">
+                Antes de oferecer horarios, o Dizei pode seguir perguntas
+                predefinidas pela clinica para entender melhor a necessidade do
+                paciente. Isso ajuda a qualificar o contato, organizar a triagem
+                inicial e preparar melhor o profissional para o atendimento.
+              </p>
+
+              <div className="mt-8 rounded-[28px] border border-brand-100 bg-brand-50 p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-700">
+                  Valor para a operacao
+                </p>
+                <p className="mt-4 text-lg font-semibold leading-8 text-slate-950">
+                  Medico, fisioterapeuta, dentista ou outro profissional pode
+                  receber um resumo da conversa com respostas-chave da triagem,
+                  em vez de comecar o atendimento sem contexto.
+                </p>
+                <p className="mt-4 text-sm leading-7 text-slate-600">
+                  A clinica define as perguntas importantes para o fluxo. O
+                  Dizei conduz a conversa, registra as respostas e organiza um
+                  resumo objetivo para apoiar a equipe.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {triageHighlights.map((item, index) => (
+                <FeatureCard
+                  key={item.title}
+                  icon={
+                    index === 0 ? (
+                      <ChatIcon />
+                    ) : index === 1 ? (
+                      <CheckIcon />
+                    ) : index === 2 ? (
+                      <BoltIcon />
+                    ) : (
+                      <CalendarIcon />
+                    )
+                  }
+                  title={item.title}
+                  description={item.description}
+                  accent={index === 2}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="como-funciona" className="section-space pt-0">
         <div className="shell">
           <SectionHeading
@@ -401,7 +462,9 @@ export default function Home() {
                   {step.title}
                 </h3>
                 <p className="mt-4 text-sm leading-7 text-slate-600">
-                  {step.description}
+                  {step.number === "02"
+                    ? "A IA atende na hora, responde o que for necessario, pode seguir perguntas de triagem definidas pela clinica e organiza as informacoes para o proximo passo."
+                    : step.description}
                 </p>
               </article>
             ))}
