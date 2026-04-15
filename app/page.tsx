@@ -149,8 +149,7 @@ export default function Home() {
                 </div>
 
                 <p className="max-w-sm text-sm leading-6 text-slate-500">
-                  Um slogan secundario para reforcar a proposta de conversa simples,
-                  acao rapida e automacao util.
+                  Conversa natural. Ação imediata.
                 </p>
               </div>
             </div>
