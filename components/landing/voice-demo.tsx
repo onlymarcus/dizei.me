@@ -156,6 +156,17 @@ function VoiceDemoPanel() {
           com o agente por voz direto na pagina. A agenda ao lado mostra o mesmo
           estilo de visualizacao publica usado na demonstracao da AgentSet.
         </p>
+        <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
+          Se preferir uma experiencia por chamada, voce tambem pode ligar para{" "}
+          <a
+            href="tel:+558132642080"
+            className="font-semibold text-slate-950 underline decoration-brand-300 underline-offset-4"
+          >
+            {DEMO_PHONE}
+          </a>
+          . O Dizei tambem pode ser configurado para atender pelo telefone,
+          WhatsApp, Telegram ou pelo proprio website do consultorio.
+        </p>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           {status === "connected" || status === "connecting" ? (
@@ -183,6 +194,13 @@ function VoiceDemoPanel() {
           >
             {isMuted ? "Ativar microfone" : "Silenciar microfone"}
           </button>
+
+          <a
+            href="tel:+558132642080"
+            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+          >
+            Ligar para {DEMO_PHONE}
+          </a>
         </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -208,11 +226,11 @@ function VoiceDemoPanel() {
               Referencia da AgentSet
             </p>
             <p className="mt-3 text-lg font-semibold text-slate-950">
-              Agenda demonstrativa publica
+              Teste tambem por telefone
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Se preferir testar por telefone como no site institucional, a
-              referencia publica atual e {DEMO_PHONE}.
+              Alem da conversa no website, voce pode ligar para {DEMO_PHONE} e
+              experimentar o atendimento por voz em uma chamada telefonica.
             </p>
           </div>
         </div>
@@ -302,20 +320,25 @@ function VoiceDemoPanel() {
 
         <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-6 shadow-sm">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-            O que esta em destaque
+            Formas de testar
           </p>
           <div className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
             <div className="flex gap-3">
               <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500" />
-              Conversa por voz iniciada dentro da propria landing.
+              Converse com o agente por voz diretamente nesta pagina.
             </div>
             <div className="flex gap-3">
               <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500" />
-              Experiencia publica e estatica, pronta para Cloudflare Pages.
+              Ligue para {DEMO_PHONE} se preferir testar por telefone.
             </div>
             <div className="flex gap-3">
               <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500" />
-              Agenda demonstrativa incorporada para reforcar a prova visual.
+              Veja como o fluxo pode conduzir perguntas, triagem e agendamento.
+            </div>
+            <div className="flex gap-3">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500" />
+              O agente tambem pode atender por WhatsApp, Telegram e no website
+              do consultorio.
             </div>
           </div>
         </div>

@@ -17,12 +17,14 @@ const badges = [
   "IA por voz",
   "Resposta em milissegundos",
   "Agendamento automatizado",
+  "Atendimento multicanal",
 ];
 
 const stats = [
   { value: "30+", label: "idiomas disponiveis para expandir o atendimento" },
   { value: "ms", label: "de resposta para uma experiencia mais fluida" },
   { value: "24h", label: "de disponibilidade para nao deixar contatos esperando" },
+  { value: "4", label: "canais para atender: telefone, WhatsApp, Telegram e site" },
 ];
 
 function BoltIcon() {
@@ -127,8 +129,17 @@ export default function Home() {
                 um resumo util para a equipe.
               </p>
 
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
+                O agente pode atender o cliente pelo telefone, WhatsApp, Telegram
+                ou diretamente no website do consultorio, mantendo a experiencia
+                simples para quem entra em contato.
+              </p>
+
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
                 <ButtonLink href="#demonstracao">Testar demonstracao</ButtonLink>
+                <ButtonLink href="tel:+558132642080" variant="secondary">
+                  Ligar para (81) 3264-2080
+                </ButtonLink>
                 <ButtonLink
                   href="https://agentset.com.br"
                   variant="secondary"
@@ -149,7 +160,7 @@ export default function Home() {
                 </div>
 
                 <p className="max-w-sm text-sm leading-6 text-slate-500">
-                  Conversa natural. Ação imediata.
+                  Conversa natural. Acao imediata.
                 </p>
               </div>
             </div>
@@ -264,7 +275,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-14 grid gap-4 rounded-[30px] border border-slate-200/80 bg-white/70 p-5 shadow-soft sm:grid-cols-3 sm:p-6">
+          <div className="mt-14 grid gap-4 rounded-[30px] border border-slate-200/80 bg-white/70 p-5 shadow-soft sm:grid-cols-2 sm:p-6 lg:grid-cols-4">
             {stats.map((item) => (
               <div
                 key={item.label}
@@ -319,7 +330,8 @@ export default function Home() {
                 <p className="mt-4 text-sm leading-7 text-white/75">
                   O Dizei responde, organiza e conduz a conversa para que o cliente
                   nao fique esperando e a equipe nao precise comecar tudo do zero a
-                  cada novo contato.
+                  cada novo contato, seja por telefone, WhatsApp, Telegram ou pelo
+                  website do consultorio.
                 </p>
               </div>
             </div>
@@ -542,10 +554,14 @@ export default function Home() {
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
               Pare de perder clientes por demora no atendimento. Com o Dizei, sua
-              operacao ganha velocidade logo no primeiro contato.
+              operacao ganha velocidade logo no primeiro contato, no canal que o
+              cliente preferir usar.
             </p>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
               <ButtonLink href="#demonstracao">Testar demonstracao</ButtonLink>
+              <ButtonLink href="tel:+558132642080" variant="secondary">
+                Ligar para (81) 3264-2080
+              </ButtonLink>
               <ButtonLink
                 href="https://agentset.com.br"
                 variant="secondary"
