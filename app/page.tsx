@@ -27,6 +27,9 @@ const stats = [
   { value: "4", label: "canais para atender: telefone, WhatsApp, Telegram e site" },
 ];
 
+const specialistContactUrl =
+  "https://wa.me/5581999440909?text=Ol%C3%A1%2C%20quero%20falar%20com%20um%20especialista%20sobre%20o%20Dizei.";
+
 function BoltIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-6 w-6 fill-current" aria-hidden="true">
@@ -137,15 +140,11 @@ export default function Home() {
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
                 <ButtonLink href="#demonstracao">Testar demonstracao</ButtonLink>
+                <ButtonLink href={specialistContactUrl} variant="secondary" external>
+                  Falar com um especialista
+                </ButtonLink>
                 <ButtonLink href="tel:+558132642080" variant="secondary">
                   Ligar para (81) 3264-2080
-                </ButtonLink>
-                <ButtonLink
-                  href="https://agentset.com.br"
-                  variant="secondary"
-                  external
-                >
-                  Falar com a AgentSet
                 </ButtonLink>
               </div>
 
@@ -558,16 +557,14 @@ export default function Home() {
               cliente preferir usar.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-              <ButtonLink href="#demonstracao">Testar demonstracao</ButtonLink>
+              <ButtonLink href={specialistContactUrl} external>
+                Falar com um especialista
+              </ButtonLink>
+              <ButtonLink href="#demonstracao" variant="secondary">
+                Testar demonstracao
+              </ButtonLink>
               <ButtonLink href="tel:+558132642080" variant="secondary">
                 Ligar para (81) 3264-2080
-              </ButtonLink>
-              <ButtonLink
-                href="https://agentset.com.br"
-                variant="secondary"
-                external
-              >
-                Conhecer a AgentSet
               </ButtonLink>
             </div>
           </div>

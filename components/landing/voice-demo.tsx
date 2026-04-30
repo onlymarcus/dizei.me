@@ -11,6 +11,8 @@ type TranscriptItem = {
 
 const AGENT_ID = "agent_8301knjjt31gfgya9qk2jq11h30j";
 const DEMO_PHONE = "(81) 3264-2080";
+const SPECIALIST_CONTACT_URL =
+  "https://wa.me/5581999440909?text=Ol%C3%A1%2C%20quero%20falar%20com%20um%20especialista%20sobre%20o%20Dizei.";
 const CALENDAR_URL =
   "https://calendar.google.com/calendar/embed?src=61a30ff6ddf982134fa08cfc7a00e64c846c17b9e7d489f65f4982efbd636557%40group.calendar.google.com&ctz=America%2FRecife";
 
@@ -194,6 +196,15 @@ function VoiceDemoPanel() {
           >
             {isMuted ? "Ativar microfone" : "Silenciar microfone"}
           </button>
+
+          <a
+            href={SPECIALIST_CONTACT_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+          >
+            Falar com um especialista
+          </a>
 
           <a
             href="tel:+558132642080"
