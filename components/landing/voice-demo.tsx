@@ -3,6 +3,12 @@
 import { ConversationProvider, useConversation } from "@elevenlabs/react";
 import { useEffect, useMemo, useState } from "react";
 
+import {
+  calendarEmbedUrl,
+  demoPhoneDisplay,
+  demoPhoneHref,
+} from "@/lib/site-config";
+
 type TranscriptItem = {
   id: string;
   role: "user" | "agent";
@@ -10,12 +16,6 @@ type TranscriptItem = {
 };
 
 const AGENT_ID = "agent_8301knjjt31gfgya9qk2jq11h30j";
-const DEMO_PHONE = "(81) 3264-2080";
-const SPECIALIST_CONTACT_URL =
-  "https://wa.me/5581999440909?text=Ol%C3%A1%2C%20quero%20falar%20com%20um%20especialista%20sobre%20o%20Dizei.";
-const CALENDAR_URL =
-  "https://calendar.google.com/calendar/embed?src=61a30ff6ddf982134fa08cfc7a00e64c846c17b9e7d489f65f4982efbd636557%40group.calendar.google.com&ctz=America%2FRecife";
-
 const CONNECTION_TYPE = "websocket" as const;
 
 function formatTimestamp(date: Date) {
@@ -31,90 +31,65 @@ function VoiceDemoPanel() {
   const [calendarTick, setCalendarTick] = useState(0);
   const [lastRefresh, setLastRefresh] = useState(() => new Date());
 
-  const {
-    startSession,
-    endSession,
-    status,
-    mode,
-    isMuted,
-    setMuted,
-    getId,
-  } = useConversation({
-    onConnect: () => {
-      setErrorMessage(null);
-      setMessages([]);
-    },
-    onDisconnect: () => {
-      setMessages((current) =>
-        current.length === 0
-          ? [
-              {
-                id: "disconnected-empty",
-                role: "agent",
-                text: "A demonstracao foi encerrada. Quando quiser, voce pode iniciar outra conversa.",
-              },
-            ]
-          : current,
-      );
-    },
-    onError: (message) => {
-      const normalized = message.includes("pc connection")
-        ? "Nao foi possivel abrir a conexao de audio em tempo real. Tente novamente em alguns segundos."
-        : message;
+  const { startSession, endSession, status, mode, isMuted, setMuted } =
+    useConversation({
+      onConnect: () => {
+        setErrorMessage(null);
+        setMessages([]);
+      },
+      onDisconnect: () => {
+        setMessages((current) =>
+          current.length === 0
+            ? [
+                {
+                  id: "finished-empty",
+                  role: "agent",
+                  text: "A demonstracao foi encerrada. Quando quiser, voce pode iniciar outra conversa.",
+                },
+              ]
+            : current,
+        );
+      },
+      onError: (message) => {
+        const normalized = message.includes("pc connection")
+          ? "Nao foi possivel abrir a conexao de audio em tempo real. Tente novamente em alguns segundos."
+          : message;
 
-      setErrorMessage(normalized);
-    },
-    onMessage: ({ message, role, event_id }) => {
-      const cleanMessage = message?.trim();
-      if (!cleanMessage) {
-        return;
-      }
-
-      setMessages((current) => {
-        const itemId =
-          event_id !== undefined
-            ? `${role}-${event_id}`
-            : `${role}-${cleanMessage}-${current.length}`;
-
-        const existingIndex = current.findIndex((item) => item.id === itemId);
-
-        if (existingIndex >= 0) {
-          const updated = [...current];
-          updated[existingIndex] = { ...updated[existingIndex], text: cleanMessage };
-          return updated;
+        setErrorMessage(normalized);
+      },
+      onMessage: ({ message, role, event_id }) => {
+        const cleanMessage = message?.trim();
+        if (!cleanMessage) {
+          return;
         }
 
-        return [...current, { id: itemId, role, text: cleanMessage }];
-      });
-    },
-  });
+        setMessages((current) => {
+          const itemId =
+            event_id !== undefined
+              ? `${role}-${event_id}`
+              : `${role}-${cleanMessage}-${current.length}`;
 
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setCalendarTick((value) => value + 1);
-      setLastRefresh(new Date());
-    }, 60000);
+          const existingIndex = current.findIndex((item) => item.id === itemId);
 
-    return () => window.clearInterval(interval);
-  }, []);
+          if (existingIndex >= 0) {
+            const updated = [...current];
+            updated[existingIndex] = {
+              ...updated[existingIndex],
+              text: cleanMessage,
+            };
+            return updated;
+          }
 
-  const statusLabel = useMemo(() => {
-    if (status === "connected") {
-      return mode === "speaking" ? "Agente falando" : "Agente ouvindo";
-    }
-
-    if (status === "connecting") {
-      return "Conectando demonstracao";
-    }
-
-    if (status === "error") {
-      return "Erro na conexao";
-    }
-
-    return "Demonstracao pronta";
-  }, [mode, status]);
+          return [...current, { id: itemId, role, text: cleanMessage }];
+        });
+      },
+    });
 
   async function handleStartDemo() {
+    if (status === "connected" || status === "connecting") {
+      return;
+    }
+
     setErrorMessage(null);
 
     try {
@@ -129,232 +104,202 @@ function VoiceDemoPanel() {
         connectionType: CONNECTION_TYPE,
       });
     } catch (error) {
-      const fallback =
-        "Nao foi possivel acessar o microfone. Verifique a permissao do navegador e tente novamente.";
-
       if (error instanceof Error && error.message.trim()) {
         setErrorMessage(error.message);
         return;
       }
 
-      setErrorMessage(fallback);
+      setErrorMessage(
+        "Nao foi possivel acessar o microfone. Verifique a permissao do navegador e tente novamente.",
+      );
     }
   }
 
-  function handleRefreshCalendar() {
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setCalendarTick((value) => value + 1);
+      setLastRefresh(new Date());
+    }, 45000);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    function startFromExternalButton() {
+      void handleStartDemo();
+    }
+
+    window.addEventListener("dizei:start-demo", startFromExternalButton);
+
+    return () => {
+      window.removeEventListener("dizei:start-demo", startFromExternalButton);
+    };
+  });
+
+  const statusLabel = useMemo(() => {
+    if (status === "connected") {
+      return mode === "speaking" ? "IA falando" : "IA ouvindo";
+    }
+
+    if (status === "connecting") {
+      return "Conectando";
+    }
+
+    if (status === "error") {
+      return "Erro na conexao";
+    }
+
+    return "Pronto para testar";
+  }, [mode, status]);
+
+  function refreshCalendar() {
     setCalendarTick((value) => value + 1);
     setLastRefresh(new Date());
   }
 
   return (
-    <div className="grid gap-8 rounded-[34px] border border-slate-200 bg-white/80 p-8 shadow-soft backdrop-blur lg:grid-cols-[1fr_0.95fr] lg:p-12">
-      <div>
-        <span className="section-kicker">Demonstracao ao vivo</span>
-        <h2 className="text-balance text-3xl font-semibold text-slate-950 sm:text-4xl lg:text-5xl">
-          Inicie uma conversa real com o agente Consultorio IA.
-        </h2>
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-          Toque em testar demonstracao, permita o uso do microfone e converse
-          com o agente por voz direto na pagina. A agenda ao lado mostra o mesmo
-          estilo de visualizacao publica usado na demonstracao da AgentSet.
-        </p>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
-          Se preferir uma experiencia por chamada, voce tambem pode ligar para{" "}
-          <a
-            href="tel:+558132642080"
-            className="font-semibold text-slate-950 underline decoration-brand-300 underline-offset-4"
-          >
-            {DEMO_PHONE}
-          </a>
-          . O Dizei tambem pode ser configurado para atender pelo telefone,
-          WhatsApp, Telegram ou pelo proprio website do consultorio.
-        </p>
-
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          {status === "connected" || status === "connecting" ? (
-            <button
-              type="button"
-              onClick={endSession}
-              className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-slate-900"
-            >
-              Encerrar demonstracao
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleStartDemo}
-              className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-slate-900"
-            >
-              Testar demonstracao
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setMuted(!isMuted)}
-            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
-          >
-            {isMuted ? "Ativar microfone" : "Silenciar microfone"}
-          </button>
-
-          <a
-            href={SPECIALIST_CONTACT_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
-          >
-            Falar com um especialista
-          </a>
-
-          <a
-            href="tel:+558132642080"
-            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
-          >
-            Ligar para {DEMO_PHONE}
-          </a>
-        </div>
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-              Status da conversa
+    <section
+      id="demonstracao"
+      className="border-y border-slate-200 bg-white py-12 sm:py-16"
+    >
+      <div className="shell">
+        <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+          <div>
+            <span className="section-kicker">Demonstracao ao vivo</span>
+            <h2 className="mt-4 text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl">
+              Fale com a IA sem sair da pagina.
+            </h2>
+            <p className="mt-4 text-base leading-7 text-slate-600">
+              Clique no botao, permita o microfone e peca um horario de consulta.
+              Voce escuta a resposta, acompanha a conversa por texto e ve a
+              agenda sendo atualizada.
             </p>
-            <p className="mt-3 text-lg font-semibold text-slate-950">
-              {statusLabel}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              {status === "connected"
-                ? `ID da conversa: ${getId() || "conectando"}`
-                : "Quando a demonstracao iniciar, o agente vai responder por voz aqui mesmo."}
-            </p>
-            <p className="mt-2 text-xs leading-5 text-slate-500">
-              Modo de conexao atual: {CONNECTION_TYPE}.
-            </p>
-          </div>
 
-          <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-              Referencia da AgentSet
-            </p>
-            <p className="mt-3 text-lg font-semibold text-slate-950">
-              Teste tambem por telefone
-            </p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              Alem da conversa no website, voce pode ligar para {DEMO_PHONE} e
-              experimentar o atendimento por voz em uma chamada telefonica.
-            </p>
-          </div>
-        </div>
-
-        {errorMessage ? (
-          <div className="mt-6 rounded-[22px] border border-rose-200 bg-rose-50 px-5 py-4 text-sm leading-6 text-rose-700">
-            {errorMessage}
-          </div>
-        ) : null}
-
-        <div className="mt-8 rounded-[28px] border border-slate-200 bg-slate-950 p-6 text-white shadow-glow">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white/60">
-                Conversa em andamento
-              </p>
-              <p className="mt-2 text-2xl font-semibold">
-                Veja a interacao acontecendo na pratica
-              </p>
-            </div>
-            <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80">
-              {status}
-            </div>
-          </div>
-
-          <div className="mt-6 space-y-3 rounded-[24px] border border-white/10 bg-white/5 p-5">
-            {messages.length === 0 ? (
-              <div className="text-sm leading-6 text-white/75">
-                Assim que a demonstracao iniciar, as mensagens trocadas com o
-                agente aparecem aqui.
-              </div>
-            ) : (
-              messages.slice(-8).map((item) => (
-                <div
-                  key={item.id}
-                  className={`max-w-[92%] rounded-3xl px-4 py-3 text-sm leading-6 ${
-                    item.role === "agent"
-                      ? "ml-auto rounded-tr-md bg-brand-400 text-slate-950"
-                      : "rounded-tl-md bg-white/10 text-white/85"
-                  }`}
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              {status === "connected" || status === "connecting" ? (
+                <button
+                  type="button"
+                  onClick={endSession}
+                  className="inline-flex w-full items-center justify-center rounded-full bg-slate-950 px-7 py-4 text-base font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-slate-900 sm:w-auto"
                 >
-                  {item.text}
+                  Encerrar demonstracao
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleStartDemo}
+                  className="inline-flex w-full items-center justify-center rounded-full bg-emerald-500 px-7 py-4 text-base font-semibold text-slate-950 shadow-[0_18px_45px_rgba(16,185,129,0.24)] transition hover:-translate-y-0.5 hover:bg-emerald-400 sm:w-auto"
+                >
+                  Ligar e testar agora
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setMuted(!isMuted)}
+                className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-4 text-base font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:border-slate-400 sm:w-auto"
+              >
+                {isMuted ? "Ativar microfone" : "Silenciar microfone"}
+              </button>
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm font-semibold text-slate-950">{statusLabel}</p>
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Tambem e possivel testar por telefone:{" "}
+                <a
+                  href={demoPhoneHref}
+                  className="font-semibold text-slate-950 underline decoration-emerald-300 underline-offset-4"
+                >
+                  {demoPhoneDisplay}
+                </a>
+                .
+              </p>
+            </div>
+
+            {errorMessage ? (
+              <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm leading-6 text-rose-700">
+                {errorMessage}
+              </div>
+            ) : null}
+
+            <div className="mt-6 rounded-3xl bg-slate-950 p-5 text-white">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
+                    Conversa
+                  </p>
+                  <p className="mt-1 text-xl font-semibold">
+                    Transcricao em tempo real
+                  </p>
                 </div>
-              ))
-            )}
+                <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/75">
+                  {status}
+                </span>
+              </div>
+
+              <div className="mt-5 max-h-[320px] space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-white/5 p-4">
+                {messages.length === 0 ? (
+                  <p className="text-sm leading-6 text-white/70">
+                    Assim que a demonstracao iniciar, as mensagens aparecem aqui.
+                  </p>
+                ) : (
+                  messages.slice(-8).map((item) => (
+                    <div
+                      key={item.id}
+                      className={`max-w-[92%] rounded-2xl px-4 py-3 text-sm leading-6 ${
+                        item.role === "agent"
+                          ? "ml-auto bg-emerald-300 text-slate-950"
+                          : "bg-white/10 text-white/85"
+                      }`}
+                    >
+                      {item.text}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-soft">
+            <div className="flex flex-col gap-3 border-b border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                  Agenda em tempo real
+                </p>
+                <p className="mt-1 text-lg font-semibold text-slate-950">
+                  Calendario da demonstracao
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={refreshCalendar}
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
+              >
+                Atualizar agenda
+              </button>
+            </div>
+
+            <p className="px-4 pt-4 text-sm leading-6 text-slate-600 sm:px-5">
+              Atualizacao automatica a cada 45 segundos. Ultima atualizacao as{" "}
+              {formatTimestamp(lastRefresh)}.
+            </p>
+
+            <div className="p-3 sm:p-5">
+              <iframe
+                key={calendarTick}
+                src={`${calendarEmbedUrl}&cacheBust=${calendarTick}`}
+                title="Agenda demonstrativa do Dizei"
+                className="h-[520px] w-full rounded-2xl border border-slate-200 bg-white"
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="grid gap-5">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-                Agenda demonstrativa
-              </p>
-              <p className="mt-2 text-xl font-semibold text-slate-950">
-                Visualizacao publica no estilo AgentSet
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleRefreshCalendar}
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
-            >
-              Atualizar agora
-            </button>
-          </div>
-
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Atualizacao automatica a cada 60 segundos. Ultima atualizacao as{" "}
-            {formatTimestamp(lastRefresh)}.
-          </p>
-
-          <div className="mt-5 overflow-hidden rounded-[24px] border border-slate-200">
-            <iframe
-              key={calendarTick}
-              src={`${CALENDAR_URL}&cacheBust=${calendarTick}`}
-              title="Agenda demonstrativa publica"
-              className="h-[480px] w-full border-0"
-              loading="lazy"
-              referrerPolicy="strict-origin-when-cross-origin"
-            />
-          </div>
-        </div>
-
-        <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-6 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-            Formas de testar
-          </p>
-          <div className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-            <div className="flex gap-3">
-              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500" />
-              Converse com o agente por voz diretamente nesta pagina.
-            </div>
-            <div className="flex gap-3">
-              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500" />
-              Ligue para {DEMO_PHONE} se preferir testar por telefone.
-            </div>
-            <div className="flex gap-3">
-              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500" />
-              Veja como o fluxo pode conduzir perguntas, triagem e agendamento.
-            </div>
-            <div className="flex gap-3">
-              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500" />
-              O agente tambem pode atender por WhatsApp, Telegram e no website
-              do consultorio.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
   );
 }
 
