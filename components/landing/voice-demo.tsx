@@ -7,6 +7,8 @@ import {
   calendarEmbedUrl,
   demoPhoneDisplay,
   demoPhoneHref,
+  demoWhatsappDisplay,
+  demoWhatsappHref,
 } from "@/lib/site-config";
 
 type TranscriptItem = {
@@ -172,7 +174,8 @@ function VoiceDemoPanel() {
             <p className="mt-4 text-base leading-7 text-slate-600">
               Clique no botao, permita o microfone e peca um horario de consulta.
               Voce escuta a resposta, acompanha a conversa por texto e ve a
-              agenda sendo atualizada.
+              agenda sendo atualizada. Tambem e possivel testar o mesmo agente
+              pelo telefone ou pelo WhatsApp da demonstracao.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -201,17 +204,35 @@ function VoiceDemoPanel() {
               >
                 {isMuted ? "Ativar microfone" : "Silenciar microfone"}
               </button>
+
+              <a
+                href={demoWhatsappHref}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-4 text-base font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:border-slate-400 sm:w-auto"
+              >
+                Testar pelo WhatsApp
+              </a>
             </div>
 
             <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <p className="text-sm font-semibold text-slate-950">{statusLabel}</p>
               <p className="mt-1 text-sm leading-6 text-slate-600">
-                Tambem e possivel testar por telefone:{" "}
+                Canais de teste da IA: telefone{" "}
                 <a
                   href={demoPhoneHref}
                   className="font-semibold text-slate-950 underline decoration-emerald-300 underline-offset-4"
                 >
                   {demoPhoneDisplay}
+                </a>
+                {" "}e WhatsApp{" "}
+                <a
+                  href={demoWhatsappHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-slate-950 underline decoration-emerald-300 underline-offset-4"
+                >
+                  {demoWhatsappDisplay}
                 </a>
                 .
               </p>

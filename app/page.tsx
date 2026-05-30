@@ -1,7 +1,13 @@
 import { StartDemoButton } from "@/components/landing/start-demo-button";
 import { ArrowIcon, CheckIcon } from "@/components/landing/ui-icons";
 import { VoiceDemo } from "@/components/landing/voice-demo";
-import { demoPhoneDisplay, demoPhoneHref, whatsappHref } from "@/lib/site-config";
+import {
+  commercialWhatsappHref,
+  demoPhoneDisplay,
+  demoPhoneHref,
+  demoWhatsappDisplay,
+  demoWhatsappHref,
+} from "@/lib/site-config";
 
 const benefits = [
   "Atendimento 24h",
@@ -37,7 +43,7 @@ export default function Home() {
               href={demoPhoneHref}
               className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white/85 transition hover:bg-white/10"
             >
-              {demoPhoneDisplay}
+              Teste por telefone
             </a>
           </header>
 
@@ -57,27 +63,58 @@ export default function Home() {
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
                 Clique para conversar com a IA dentro da pagina, peca uma
                 consulta e acompanhe o agendamento aparecendo na agenda em tempo
-                real.
+                real. Se preferir, teste tambem pelo telefone ou WhatsApp da
+                demonstracao.
               </p>
 
               <div className="mt-8 rounded-3xl border border-white/12 bg-white/8 p-5">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  Teste tambem por telefone
+                  Canais de teste da IA
                 </p>
-                <a
-                  href={demoPhoneHref}
-                  className="mt-2 block font-[var(--font-space-grotesk)] text-4xl font-semibold text-emerald-300 sm:text-5xl"
-                >
-                  {demoPhoneDisplay}
-                </a>
-                <p className="mt-3 text-sm leading-6 text-slate-300">
-                  No navegador ou por telefone: fale como paciente, escolha um
-                  horario e veja o compromisso aparecer na agenda.
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <a
+                    href={demoPhoneHref}
+                    className="rounded-2xl border border-white/12 bg-white/8 p-4 transition hover:bg-white/12"
+                  >
+                    <span className="text-sm font-semibold text-slate-300">
+                      Telefone
+                    </span>
+                    <span className="mt-1 block font-[var(--font-space-grotesk)] text-2xl font-semibold text-emerald-300">
+                      {demoPhoneDisplay}
+                    </span>
+                  </a>
+                  <a
+                    href={demoWhatsappHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-2xl border border-white/12 bg-white/8 p-4 transition hover:bg-white/12"
+                  >
+                    <span className="text-sm font-semibold text-slate-300">
+                      WhatsApp da IA
+                    </span>
+                    <span className="mt-1 block font-[var(--font-space-grotesk)] text-2xl font-semibold text-emerald-300">
+                      {demoWhatsappDisplay}
+                    </span>
+                  </a>
+                </div>
+                <p className="mt-4 text-sm leading-6 text-slate-300">
+                  Esses canais conectam voce ao agente de IA da demonstracao.
+                  Fale como paciente, escolha um horario e veja o compromisso
+                  aparecer na agenda.
                 </p>
               </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <StartDemoButton />
+                <StartDemoButton>Testar na pagina agora</StartDemoButton>
+                <a
+                  href={demoWhatsappHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/16 bg-white/10 px-7 py-4 text-base font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/16 sm:w-auto"
+                >
+                  Testar pelo WhatsApp
+                  <ArrowIcon />
+                </a>
               </div>
             </div>
 
@@ -200,16 +237,20 @@ export default function Home() {
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a
-              href={whatsappHref}
+              href={commercialWhatsappHref}
               target="_blank"
               rel="noreferrer"
               className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-8 py-4 text-base font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-slate-900 sm:w-auto"
             >
-              Falar no WhatsApp
+              Quero implementar o Dizei
               <ArrowIcon />
             </a>
             <StartDemoButton>Testar agora na pagina</StartDemoButton>
           </div>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-slate-500">
+            Atendimento comercial humano para adaptar o Dizei a rotina da sua
+            clinica.
+          </p>
         </div>
       </section>
 
