@@ -3,7 +3,7 @@ export const demoPhoneHref = "tel:+558132642080";
 
 export const demoWhatsappDisplay = "(81) 99915-1979";
 export const demoWhatsappHref =
-  "https://wa.me/5581999151979?text=Ol%C3%A1%2C%20quero%20testar%20o%20atendimento%20do%20Dizei.";
+  "https://wa.me/5581999151979?text=ol%C3%A1%2C%20tudo%20bem";
 
 export const commercialWhatsappHref =
   "https://wa.me/5581999440909?text=Ol%C3%A1%2C%20quero%20implementar%20o%20Dizei%20na%20minha%20cl%C3%ADnica.";
