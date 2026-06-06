@@ -15,16 +15,16 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dizei.me"),
-  title: "Dizei | IA por telefone para agendar pacientes",
+  title: "Dizei | IA para atendimento e agendamento em clinicas",
   description:
-    "Teste o Dizei: ligue para a IA, peca uma consulta e veja o agendamento aparecendo na agenda ao vivo.",
+    "Dizei e um agente de IA para atendimento por telefone, WhatsApp e website, com triagem e agendamento para clinicas e consultorios.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Dizei | IA por telefone para agendar pacientes",
+    title: "Dizei | IA para atendimento e agendamento em clinicas",
     description:
-      "Ligue para a IA, peca uma consulta e acompanhe o agendamento aparecendo na agenda em tempo real.",
+      "Agente de IA para atender pacientes, responder mensagens, fazer triagem e agendar consultas.",
     url: "https://dizei.me",
     siteName: "Dizei",
     locale: "pt_BR",

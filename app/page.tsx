@@ -2,7 +2,9 @@ import { StartDemoButton } from "@/components/landing/start-demo-button";
 import { ArrowIcon, CheckIcon } from "@/components/landing/ui-icons";
 import { VoiceDemo } from "@/components/landing/voice-demo";
 import {
+  commercialWhatsappDisplay,
   commercialWhatsappHref,
+  companyCnpj,
   demoPhoneDisplay,
   demoPhoneHref,
   demoWhatsappDisplay,
@@ -25,6 +27,13 @@ const audiences = [
   "Psicologos",
   "Dermatologistas",
   "Consultorios particulares",
+];
+
+const servicePoints = [
+  "Atendimento por telefone, WhatsApp e website",
+  "Agendamento em Google Calendar ou Cal.com",
+  "Triagem com perguntas predefinidas",
+  "Resumo da conversa para a equipe",
 ];
 
 export default function Home() {
@@ -151,6 +160,45 @@ export default function Home() {
 
       <VoiceDemo />
 
+      <section className="bg-white py-14 sm:py-16">
+        <div className="shell grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+          <div>
+            <p className="section-kicker">O que e o Dizei</p>
+            <h2 className="text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl">
+              Uma recepcao inteligente para clinicas que precisam responder e
+              agendar mais rapido.
+            </h2>
+            <p className="mt-5 text-base leading-7 text-slate-600">
+              O Dizei e um agente de IA para atendimento de pacientes e clientes.
+              Ele conversa com voz natural, pode responder mensagens via
+              WhatsApp, coletar informacoes iniciais e conduzir o agendamento na
+              agenda da clinica.
+            </p>
+            <p className="mt-4 text-base leading-7 text-slate-600">
+              O produto e voltado para clinicas, consultorios, odontologia,
+              estetica, psicologia e empresas de servicos que perdem
+              oportunidades por demora no atendimento.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {servicePoints.map((point) => (
+              <div
+                key={point}
+                className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <CheckIcon />
+                </span>
+                <p className="text-sm font-semibold leading-6 text-slate-900">
+                  {point}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="bg-slate-50 py-14 sm:py-16">
         <div className="shell">
           <div className="max-w-2xl">
@@ -249,17 +297,34 @@ export default function Home() {
           </div>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-slate-500">
             Atendimento comercial humano para adaptar o Dizei a rotina da sua
-            clinica.
+            clinica. Contato comercial: {commercialWhatsappDisplay}.
           </p>
         </div>
       </section>
 
       <footer className="border-t border-slate-200 bg-white py-8">
-        <div className="shell flex flex-col gap-3 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-semibold text-slate-700">Dizei</p>
-          <a href="https://dizei.me" target="_blank" rel="noreferrer">
-            dizei.me
-          </a>
+        <div className="shell grid gap-5 text-sm text-slate-500 lg:grid-cols-[1fr_auto] lg:items-start">
+          <div>
+            <p className="font-semibold text-slate-700">Dizei</p>
+            <p className="mt-1 text-slate-500">CNPJ: {companyCnpj}</p>
+            <p className="mt-2 max-w-2xl leading-6">
+              Agente de IA para atendimento, triagem e agendamento em clinicas e
+              consultorios. WhatsApp e Meta sao marcas de seus respectivos
+              titulares; o Dizei nao declara afiliacao oficial ou propriedade
+              dessas marcas.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-4 lg:justify-end">
+            <a href="https://dizei.me" target="_blank" rel="noreferrer">
+              dizei.me
+            </a>
+            <a href="/privacidade.html">Privacidade</a>
+            <a href="/termos.html">Termos de uso</a>
+            <a href={commercialWhatsappHref} target="_blank" rel="noreferrer">
+              Contato comercial
+            </a>
+          </div>
         </div>
       </footer>
     </main>
