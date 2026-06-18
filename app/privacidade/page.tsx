@@ -15,26 +15,30 @@ export const metadata: Metadata = {
 const sections = [
   {
     title: "1. Dados que podemos tratar",
-    body: "Podemos tratar dados informados durante o atendimento, como nome, telefone, mensagens, audio, transcricao, motivo do contato, preferencia de horario e informacoes necessarias para triagem e agendamento.",
+    body: "Podemos tratar dados informados durante o atendimento, como nome, telefone, mensagens, audio, transcricao, motivo do contato, preferencia de horario e informacoes necessarias para triagem e agendamento. Quando a clinica conecta o WhatsApp Business via autorizacao Meta, podemos tratar identificadores de conta como business_id, waba_id e phone_number_id, alem de tokens de acesso necessarios para operar o canal.",
   },
   {
     title: "2. Finalidade de uso",
-    body: "Os dados sao usados para responder contatos, realizar triagem inicial, organizar agendamentos, gerar resumo da conversa para a equipe da clinica e melhorar a experiencia de atendimento.",
+    body: "Os dados sao usados para responder contatos, realizar triagem inicial, organizar agendamentos, gerar resumo da conversa para a equipe da clinica, operar canais de mensagens autorizados e melhorar a experiencia de atendimento. Registros de mensagens, transcricoes e metadados de conversas podem ser mantidos para garantir a operacao correta do servico.",
   },
   {
     title: "3. Compartilhamento",
-    body: "Os dados podem ser compartilhados com a clinica contratante e com provedores tecnicos necessarios para operar canais de atendimento, agenda, mensagens, telefonia, hospedagem e automacao.",
+    body: "Os dados podem ser compartilhados com a clinica contratante e com provedores tecnicos necessarios para operar o servico: plataformas de telefonia, mensagens (incluindo Meta/WhatsApp), agenda, inteligencia artificial, hospedagem e automacao. O Dizei nao vende dados pessoais de pacientes ou usuarios.",
   },
   {
-    title: "4. Dados sensiveis",
+    title: "4. Autorizacao via Meta",
+    body: "Ao conectar o WhatsApp Business pela janela oficial da Meta (Embedded Signup), a clinica concede ao Dizei um token de acesso que permite enviar e receber mensagens no canal autorizado. Esse token e armazenado de forma segura e utilizado exclusivamente para operar o atendimento contratado. O Dizei nao solicita senha, codigo de verificacao SMS ou acesso direto as credenciais da conta Meta. A autorizacao pode ser revogada a qualquer momento pela propria conta Meta Business da clinica.",
+  },
+  {
+    title: "5. Dados sensiveis",
     body: "Quando o atendimento envolver saude, as informacoes podem ter natureza sensivel. O Dizei deve ser usado pela clinica de forma compativel com a LGPD e com as regras aplicaveis ao seu setor.",
   },
   {
-    title: "5. Retencao e seguranca",
-    body: "Mantemos dados pelo tempo necessario para prestar o servico, cumprir obrigacoes legais, resolver problemas e apoiar a operacao da clinica. Adotamos controles tecnicos e organizacionais para proteger as informacoes.",
+    title: "6. Retencao e seguranca",
+    body: "Mantemos dados pelo tempo necessario para prestar o servico, cumprir obrigacoes legais, resolver problemas e apoiar a operacao da clinica. Adotamos controles tecnicos e organizacionais para proteger as informacoes, incluindo tokens de acesso e identificadores de conta.",
   },
   {
-    title: "6. Direitos do titular",
+    title: "7. Direitos do titular",
     body: "O titular dos dados pode solicitar acesso, correcao, exclusao, revisao ou informacoes sobre o uso de seus dados, conforme previsto na legislacao aplicavel.",
   },
 ];
@@ -55,7 +59,7 @@ export default function PrivacyPage() {
             demonstracoes, atendimento por IA, triagem e agendamento.
           </p>
           <p className="mt-3 text-sm text-slate-500">
-            CNPJ: {companyCnpj}. Ultima atualizacao: 6 de junho de 2026.
+            CNPJ: {companyCnpj}. Ultima atualizacao: 18 de junho de 2026.
           </p>
         </div>
       </section>

@@ -30,12 +30,16 @@ const terms = [
     body: "O Dizei pode usar integracoes com ferramentas de agenda, mensagens, telefonia e automacao. A disponibilidade dessas integracoes pode depender de provedores externos.",
   },
   {
-    title: "5. Responsabilidades da clinica",
-    body: "A clinica e responsavel por revisar informacoes, confirmar atendimentos, manter dados corretos, orientar sua equipe e garantir que o uso do sistema esteja alinhado as suas obrigacoes profissionais.",
+    title: "5. Autorizacao do WhatsApp Business",
+    body: "A clinica pode conectar o WhatsApp Business ao Dizei pela janela oficial da Meta (Embedded Signup). Ao concluir a autorizacao, a clinica concede ao Dizei permissao para operar o canal autorizado. O Dizei nao solicita senha ou codigo de verificacao. A autorizacao pode ser revogada diretamente pela conta Meta Business da clinica. A conexao nao garante automaticamente a ativacao do agente — a configuracao final e realizada pela equipe Dizei apos a autorizacao.",
   },
   {
-    title: "6. Marcas de terceiros",
-    body: "WhatsApp, Meta, Google Calendar, Cal.com e outras marcas citadas pertencem aos seus respectivos titulares. O Dizei nao declara afiliacao oficial, propriedade ou parceria aprovada por essas marcas, salvo quando expressamente informado.",
+    title: "6. Responsabilidades da clinica",
+    body: "A clinica e responsavel por revisar informacoes, confirmar atendimentos, manter dados corretos, orientar sua equipe, revogar acessos quando necessario e garantir que o uso do sistema esteja alinhado as suas obrigacoes profissionais e legais.",
+  },
+  {
+    title: "7. Marcas de terceiros",
+    body: "WhatsApp, Meta, Google Calendar, Cal.com e outras marcas citadas pertencem aos seus respectivos titulares. O Dizei nao declara afiliacao oficial, propriedade ou parceria aprovada por essas marcas, salvo quando expressamente informado. O uso do Embedded Signup da Meta e feito nos termos da plataforma Meta for Developers.",
   },
 ];
 
@@ -56,7 +60,7 @@ export default function TermsPage() {
             consultorios.
           </p>
           <p className="mt-3 text-sm text-slate-500">
-            CNPJ: {companyCnpj}. Ultima atualizacao: 6 de junho de 2026.
+            CNPJ: {companyCnpj}. Ultima atualizacao: 18 de junho de 2026.
           </p>
         </div>
       </section>

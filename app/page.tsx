@@ -1,3 +1,4 @@
+import { ConnectWhatsappButton } from "@/components/landing/connect-whatsapp-button";
 import { StartDemoButton } from "@/components/landing/start-demo-button";
 import { ArrowIcon, CheckIcon } from "@/components/landing/ui-icons";
 import { VoiceDemo } from "@/components/landing/voice-demo";
@@ -299,6 +300,75 @@ export default function Home() {
             Atendimento comercial humano para adaptar o Dizei a rotina da sua
             clinica. Contato comercial: {commercialWhatsappDisplay}.
           </p>
+        </div>
+      </section>
+
+      <section className="bg-white py-14 sm:py-16">
+        <div className="shell">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="section-kicker">WhatsApp Business</p>
+            <h2 className="text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl">
+              Conecte o canal oficial da sua clinica
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+              Autorize o Dizei a operar no WhatsApp Business da sua clinica pela
+              janela oficial da Meta. O processo e seguro e acontece
+              inteiramente dentro do ambiente da Meta.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-10 grid max-w-4xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              "Janela oficial da Meta",
+              "Nao solicitamos sua senha",
+              "Controle total na sua conta Meta",
+              "Sem armazenamento de credenciais",
+            ].map((text) => (
+              <div
+                key={text}
+                className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"
+              >
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <CheckIcon />
+                </span>
+                <p className="text-sm font-semibold leading-5 text-slate-900">
+                  {text}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mx-auto mt-10 max-w-2xl rounded-3xl border border-slate-200 bg-slate-50 p-8 shadow-sm">
+            <h3 className="text-xl font-semibold text-slate-950">
+              Como funciona a autorizacao
+            </h3>
+            <ol className="mt-5 space-y-4">
+              {[
+                "Clique no botao abaixo para abrir a janela oficial da Meta.",
+                "Faca login na sua conta Meta Business e escolha o numero de WhatsApp da clinica.",
+                "Conclua a autorizacao e feche a janela.",
+                "Nossa equipe finaliza a configuracao do agente para atendimento, triagem e agendamento.",
+              ].map((step, i) => (
+                <li key={step} className="flex items-start gap-3">
+                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700">
+                    {i + 1}
+                  </span>
+                  <p className="text-base leading-7 text-slate-600">{step}</p>
+                </li>
+              ))}
+            </ol>
+
+            <div className="mt-8">
+              <ConnectWhatsappButton />
+            </div>
+
+            <p className="mt-5 text-xs leading-5 text-slate-400">
+              WhatsApp e Meta sao marcas de seus respectivos titulares. A
+              autorizacao acontece pela interface oficial da Meta. O Dizei nao
+              solicita senha, codigo de verificacao ou acesso direto as
+              credenciais da conta.
+            </p>
+          </div>
         </div>
       </section>
 
