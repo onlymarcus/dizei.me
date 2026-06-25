@@ -136,17 +136,19 @@ export function ConnectWhatsappButton() {
     // Safety timeout: reset if popup never fires callback
     const timeoutId = setTimeout(() => setStatus("popup_blocked"), 30_000);
 
-    window.FB.login(
+    console.log("[Dizei] Chamando FB.login com config_id:", META_CONFIG_ID);
+
+    try {
+      window.FB.login(
       async (response) => {
         clearTimeout(timeoutId);
 
-        const code = response.authResponse?.code;
         const elapsed = Date.now() - loginCalledAt;
+        console.log("[Dizei] FB.login callback:", JSON.stringify(response), "elapsed:", elapsed + "ms");
+
+        const code = response.authResponse?.code;
 
         if (!code) {
-          // If callback fires in under 1 second it means no popup was shown
-          // (popup blocked or SDK not configured for JS login).
-          // Otherwise the user actively closed or denied the popup.
           setStatus(elapsed < 1000 ? "popup_blocked" : "idle");
           return;
         }
@@ -179,6 +181,11 @@ export function ConnectWhatsappButton() {
         },
       }
     );
+    } catch (err) {
+      clearTimeout(timeoutId);
+      console.error("[Dizei] FB.login lancou excecao:", err);
+      setStatus("error");
+    }
   }
 
   if (status === "success") {
