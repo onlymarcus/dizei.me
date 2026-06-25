@@ -123,6 +123,7 @@ export function ConnectWhatsappButton() {
 
   async function handleConnect() {
     if (!window.FB) {
+      console.error("[Dizei] FB SDK nao carregado. window.FB =", window.FB);
       setStatus("error");
       return;
     }
@@ -158,8 +159,13 @@ export function ConnectWhatsappButton() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code, ...wabaDataRef.current }),
           });
+          if (!res.ok) {
+            const body = await res.text().catch(() => "(sem corpo)");
+            console.error("[Dizei] Backend retornou erro:", res.status, body);
+          }
           setStatus(res.ok ? "success" : "error");
-        } catch {
+        } catch (err) {
+          console.error("[Dizei] Falha na chamada ao backend:", err);
           setStatus("error");
         }
       },
