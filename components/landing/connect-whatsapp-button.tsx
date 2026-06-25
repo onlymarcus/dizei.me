@@ -2,7 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type SignupStatus = "idle" | "loading" | "authorizing" | "success" | "error";
+type SignupStatus =
+  | "idle"
+  | "loading"
+  | "authorizing"
+  | "success"
+  | "error"
+  | "popup_blocked";
 
 declare global {
   interface Window {
@@ -17,6 +23,7 @@ declare global {
       }) => void;
       login: (
         callback: (response: {
+          status?: string;
           authResponse?: { code?: string } | null;
         }) => void,
         options: {
@@ -37,13 +44,15 @@ const META_APP_ID = process.env.NEXT_PUBLIC_META_APP_ID ?? "";
 const META_CONFIG_ID =
   process.env.NEXT_PUBLIC_META_EMBEDDED_SIGNUP_CONFIG_ID ?? "";
 
-const BUTTON_LABELS: Record<SignupStatus, string> = {
-  idle: "Conectar meu WhatsApp Business",
-  loading: "Abrindo autorizacao da Meta...",
-  authorizing: "Salvando conexao...",
-  success: "Conectado",
-  error: "Nao foi possivel conectar. Tente novamente.",
-};
+function initFB() {
+  window.FB?.init({
+    appId: META_APP_ID,
+    cookie: true,
+    autoLogAppEvents: true,
+    xfbml: true,
+    version: "v23.0",
+  });
+}
 
 export function ConnectWhatsappButton() {
   const [status, setStatus] = useState<SignupStatus>("idle");
@@ -90,23 +99,21 @@ export function ConnectWhatsappButton() {
 
     window.addEventListener("message", handleMessage);
 
-    window.fbAsyncInit = function () {
-      window.FB?.init({
-        appId: META_APP_ID,
-        cookie: true,
-        autoLogAppEvents: true,
-        xfbml: true,
-        version: "v23.0",
-      });
-    };
+    // If SDK is already in the page (e.g. cached), init directly.
+    // Otherwise set fbAsyncInit so the SDK calls it when it loads.
+    if (window.FB) {
+      initFB();
+    } else {
+      window.fbAsyncInit = initFB;
 
-    if (!document.getElementById("facebook-jssdk")) {
-      const script = document.createElement("script");
-      script.id = "facebook-jssdk";
-      script.src = "https://connect.facebook.net/pt_BR/sdk.js";
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
+      if (!document.getElementById("facebook-jssdk")) {
+        const script = document.createElement("script");
+        script.id = "facebook-jssdk";
+        script.src = "https://connect.facebook.net/pt_BR/sdk.js";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
     }
 
     return () => {
@@ -123,13 +130,23 @@ export function ConnectWhatsappButton() {
     setStatus("loading");
     wabaDataRef.current = {};
 
+    const loginCalledAt = Date.now();
+
+    // Safety timeout: reset if popup never fires callback
+    const timeoutId = setTimeout(() => setStatus("popup_blocked"), 30_000);
+
     window.FB.login(
       async (response) => {
+        clearTimeout(timeoutId);
+
         const code = response.authResponse?.code;
+        const elapsed = Date.now() - loginCalledAt;
 
         if (!code) {
-          // User closed or denied the popup -- return to idle, not error
-          setStatus("idle");
+          // If callback fires in under 1 second it means no popup was shown
+          // (popup blocked or SDK not configured for JS login).
+          // Otherwise the user actively closed or denied the popup.
+          setStatus(elapsed < 1000 ? "popup_blocked" : "idle");
           return;
         }
 
@@ -173,6 +190,36 @@ export function ConnectWhatsappButton() {
     );
   }
 
+  if (status === "popup_blocked") {
+    return (
+      <div className="space-y-3 text-left">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+          <p className="text-sm font-semibold text-amber-900">
+            A janela da Meta foi bloqueada pelo navegador.
+          </p>
+          <p className="mt-1 text-sm leading-6 text-amber-800">
+            Procure o icone de popup bloqueado na barra de endereco do seu
+            navegador, clique nele e permita popups para dizei.me. Depois
+            tente novamente.
+          </p>
+        </div>
+        <button
+          onClick={() => setStatus("idle")}
+          className="text-sm font-semibold text-emerald-700 underline underline-offset-4"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    );
+  }
+
+  const BUTTON_LABELS: Record<string, string> = {
+    idle: "Conectar meu WhatsApp Business",
+    loading: "Abrindo autorizacao da Meta...",
+    authorizing: "Salvando conexao...",
+    error: "Erro ao conectar. Clique para tentar novamente.",
+  };
+
   const isDisabled =
     !META_APP_ID ||
     !META_CONFIG_ID ||
@@ -185,7 +232,7 @@ export function ConnectWhatsappButton() {
       disabled={isDisabled}
       className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-8 py-4 text-base font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {BUTTON_LABELS[status]}
+      {BUTTON_LABELS[status] ?? BUTTON_LABELS.idle}
     </button>
   );
 }
