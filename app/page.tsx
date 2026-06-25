@@ -303,7 +303,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-white py-14 sm:py-16">
+      <section id="whatsapp-connect-section" className="bg-white py-14 sm:py-16">
         <div className="shell">
           <div className="mx-auto max-w-3xl text-center">
             <p className="section-kicker">WhatsApp Business</p>

@@ -10,182 +10,136 @@ type SignupStatus =
   | "error"
   | "popup_blocked";
 
-declare global {
-  interface Window {
-    fbAsyncInit?: () => void;
-    FB?: {
-      init: (params: {
-        appId: string;
-        cookie: boolean;
-        autoLogAppEvents: boolean;
-        xfbml: boolean;
-        version: string;
-      }) => void;
-      login: (
-        callback: (response: {
-          status?: string;
-          authResponse?: { code?: string } | null;
-        }) => void,
-        options: {
-          config_id: string;
-          response_type: string;
-          override_default_response_type: boolean;
-          extras: {
-            setup: Record<string, unknown>;
-            featurize: { messaging_product: string };
-          };
-        }
-      ) => void;
-    };
-  }
-}
-
 const META_APP_ID = process.env.NEXT_PUBLIC_META_APP_ID ?? "";
 const META_CONFIG_ID =
   process.env.NEXT_PUBLIC_META_EMBEDDED_SIGNUP_CONFIG_ID ?? "";
 
-function initFB() {
-  window.FB?.init({
-    appId: META_APP_ID,
-    cookie: true,
-    autoLogAppEvents: true,
-    xfbml: true,
-    version: "v23.0",
+// Redirect URI must match exactly what is registered in the Meta app settings
+const REDIRECT_URI = "https://dizei.me/";
+
+function buildOauthUrl() {
+  const extras = JSON.stringify({
+    setup: {},
+    featurize: { messaging_product: "whatsapp" },
   });
+  return (
+    "https://www.facebook.com/dialog/oauth" +
+    `?client_id=${META_APP_ID}` +
+    `&config_id=${META_CONFIG_ID}` +
+    `&response_type=code` +
+    `&override_default_response_type=true` +
+    `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+    `&extras=${encodeURIComponent(extras)}`
+  );
 }
 
 export function ConnectWhatsappButton() {
   const [status, setStatus] = useState<SignupStatus>("idle");
-  const wabaDataRef = useRef<{
-    business_id?: string;
-    waba_id?: string;
-    phone_number_id?: string;
-  }>({});
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const popupRef = useRef<Window | null>(null);
 
+  // Cleanup on unmount
   useEffect(() => {
-    if (!META_APP_ID) return;
-
-    function handleMessage(event: MessageEvent) {
-      if (
-        event.origin !== "https://www.facebook.com" &&
-        event.origin !== "https://web.facebook.com"
-      ) {
-        return;
-      }
-      try {
-        const data =
-          typeof event.data === "string"
-            ? (JSON.parse(event.data) as Record<string, unknown>)
-            : (event.data as Record<string, unknown>);
-
-        if (data?.type === "WA_EMBEDDED_SIGNUP") {
-          const inner = data.data as
-            | {
-                business_id?: string;
-                waba_id?: string;
-                phone_number_id?: string;
-              }
-            | undefined;
-          wabaDataRef.current = {
-            business_id: inner?.business_id,
-            waba_id: inner?.waba_id,
-            phone_number_id: inner?.phone_number_id,
-          };
-        }
-      } catch {
-        // ignore parse errors from unrelated messages
-      }
-    }
-
-    window.addEventListener("message", handleMessage);
-
-    // If SDK is already in the page (e.g. cached), init directly.
-    // Otherwise set fbAsyncInit so the SDK calls it when it loads.
-    if (window.FB) {
-      initFB();
-    } else {
-      window.fbAsyncInit = initFB;
-
-      if (!document.getElementById("facebook-jssdk")) {
-        const script = document.createElement("script");
-        script.id = "facebook-jssdk";
-        script.src = "https://connect.facebook.net/pt_BR/sdk.js";
-        script.async = true;
-        script.defer = true;
-        document.head.appendChild(script);
-      }
-    }
-
     return () => {
-      window.removeEventListener("message", handleMessage);
+      if (pollRef.current) clearInterval(pollRef.current);
     };
   }, []);
 
-  async function handleConnect() {
-    if (!window.FB) {
-      console.error("[Dizei] FB SDK nao carregado. window.FB =", window.FB);
+  // Check if returning from Meta OAuth redirect (full-page fallback)
+  useEffect(() => {
+    if (!META_APP_ID) return;
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (!code) return;
+
+    // Remove code from URL bar so it doesn't linger
+    window.history.replaceState(
+      {},
+      "",
+      window.location.pathname + window.location.hash
+    );
+
+    submitCode(code);
+    // Scroll to this section
+    setTimeout(() => {
+      document.getElementById("whatsapp-connect-section")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 300);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function submitCode(code: string) {
+    setStatus("authorizing");
+    try {
+      const res = await fetch("/api/meta/embedded-signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      if (!res.ok) {
+        const body = await res.text().catch(() => "(sem corpo)");
+        console.error("[Dizei] Backend erro:", res.status, body);
+      }
+      setStatus(res.ok ? "success" : "error");
+    } catch (err) {
+      console.error("[Dizei] Falha ao chamar backend:", err);
       setStatus("error");
+    }
+  }
+
+  function handleConnect() {
+    if (!META_APP_ID || !META_CONFIG_ID) return;
+
+    // Open Meta OAuth as a popup using window.open() — always allowed from
+    // a direct user click, no FB SDK required
+    const popup = window.open(
+      buildOauthUrl(),
+      "dizei-meta-signup",
+      "width=640,height=720,left=200,top=80,popup=1"
+    );
+
+    if (!popup || popup.closed) {
+      // Popup was blocked — fall back to full-page redirect
+      window.location.href = buildOauthUrl();
       return;
     }
 
+    popupRef.current = popup;
     setStatus("loading");
-    wabaDataRef.current = {};
 
-    const loginCalledAt = Date.now();
-
-    // Safety timeout: reset if popup never fires callback
-    const timeoutId = setTimeout(() => setStatus("popup_blocked"), 30_000);
-
-    console.log("[Dizei] Chamando FB.login com config_id:", META_CONFIG_ID);
-
-    try {
-      window.FB.login(
-      async (response) => {
-        clearTimeout(timeoutId);
-
-        const elapsed = Date.now() - loginCalledAt;
-        console.log("[Dizei] FB.login callback:", JSON.stringify(response), "elapsed:", elapsed + "ms");
-
-        const code = response.authResponse?.code;
-
-        if (!code) {
-          setStatus(elapsed < 1000 ? "popup_blocked" : "idle");
+    // Poll the popup URL until it redirects back to our domain
+    pollRef.current = setInterval(() => {
+      try {
+        if (!popup || popup.closed) {
+          clearInterval(pollRef.current!);
+          setStatus((s) => (s === "loading" ? "idle" : s));
           return;
         }
 
-        setStatus("authorizing");
-
+        let href = "";
         try {
-          const res = await fetch("/api/meta/embedded-signup", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code, ...wabaDataRef.current }),
-          });
-          if (!res.ok) {
-            const body = await res.text().catch(() => "(sem corpo)");
-            console.error("[Dizei] Backend retornou erro:", res.status, body);
-          }
-          setStatus(res.ok ? "success" : "error");
-        } catch (err) {
-          console.error("[Dizei] Falha na chamada ao backend:", err);
-          setStatus("error");
+          href = popup.location.href;
+        } catch {
+          // Still on facebook.com (cross-origin) — expected, keep polling
+          return;
         }
-      },
-      {
-        config_id: META_CONFIG_ID,
-        response_type: "code",
-        override_default_response_type: true,
-        extras: {
-          setup: {},
-          featurize: { messaging_product: "whatsapp" },
-        },
+
+        if (href && href.startsWith(REDIRECT_URI)) {
+          clearInterval(pollRef.current!);
+          const code = new URL(href).searchParams.get("code");
+          popup.close();
+
+          if (code) {
+            submitCode(code);
+          } else {
+            setStatus("idle");
+          }
+        }
+      } catch {
+        clearInterval(pollRef.current!);
       }
-    );
-    } catch (err) {
-      clearTimeout(timeoutId);
-      console.error("[Dizei] FB.login lancou excecao:", err);
-      setStatus("error");
-    }
+    }, 300);
   }
 
   if (status === "success") {
@@ -211,9 +165,8 @@ export function ConnectWhatsappButton() {
             A janela da Meta foi bloqueada pelo navegador.
           </p>
           <p className="mt-1 text-sm leading-6 text-amber-800">
-            Procure o icone de popup bloqueado na barra de endereco do seu
-            navegador, clique nele e permita popups para dizei.me. Depois
-            tente novamente.
+            Permita popups para dizei.me nas configuracoes do navegador e tente
+            novamente.
           </p>
         </div>
         <button
@@ -226,7 +179,7 @@ export function ConnectWhatsappButton() {
     );
   }
 
-  const BUTTON_LABELS: Record<string, string> = {
+  const LABELS: Record<string, string> = {
     idle: "Conectar meu WhatsApp Business",
     loading: "Abrindo autorizacao da Meta...",
     authorizing: "Salvando conexao...",
@@ -245,7 +198,7 @@ export function ConnectWhatsappButton() {
       disabled={isDisabled}
       className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-8 py-4 text-base font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {BUTTON_LABELS[status] ?? BUTTON_LABELS.idle}
+      {LABELS[status] ?? LABELS.idle}
     </button>
   );
 }
