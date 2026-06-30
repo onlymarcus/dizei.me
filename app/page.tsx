@@ -339,35 +339,7 @@ export default function Home() {
           </div>
 
           <div className="mx-auto mt-10 max-w-2xl rounded-3xl border border-slate-200 bg-slate-50 p-8 shadow-sm">
-            <h3 className="text-xl font-semibold text-slate-950">
-              Como funciona a autorizacao
-            </h3>
-            <ol className="mt-5 space-y-4">
-              {[
-                "Clique no botao abaixo para abrir a janela oficial da Meta.",
-                "Faca login na sua conta Meta Business e escolha o numero de WhatsApp da clinica.",
-                "Conclua a autorizacao e feche a janela.",
-                "Nossa equipe finaliza a configuracao do agente para atendimento, triagem e agendamento.",
-              ].map((step, i) => (
-                <li key={step} className="flex items-start gap-3">
-                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700">
-                    {i + 1}
-                  </span>
-                  <p className="text-base leading-7 text-slate-600">{step}</p>
-                </li>
-              ))}
-            </ol>
-
-            <div className="mt-8">
-              <ConnectWhatsappButton />
-            </div>
-
-            <p className="mt-5 text-xs leading-5 text-slate-400">
-              WhatsApp e Meta sao marcas de seus respectivos titulares. A
-              autorizacao acontece pela interface oficial da Meta. O Dizei nao
-              solicita senha, codigo de verificacao ou acesso direto as
-              credenciais da conta.
-            </p>
+            <ConnectWhatsappButton />
           </div>
         </div>
       </section>
