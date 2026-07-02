@@ -63,7 +63,7 @@ async function hmacSign(payload: string, secret: string): Promise<string> {
 async function verifyClinicToken(
   token: string,
   secret: string
-): Promise<{ valid: boolean; clinicName?: string }> {
+): Promise<{ valid: boolean; clinicName?: string; clinicId?: string }> {
   const dot = token.lastIndexOf(".");
   if (dot === -1) return { valid: false };
 
@@ -79,10 +79,11 @@ async function verifyClinicToken(
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     const data = JSON.parse(new TextDecoder().decode(bytes)) as {
       c: string;
+      id: string;
       exp: number;
     };
     if (data.exp < Math.floor(Date.now() / 1000)) return { valid: false };
-    return { valid: true, clinicName: data.c };
+    return { valid: true, clinicName: data.c, clinicId: data.id };
   } catch {
     return { valid: false };
   }
@@ -113,7 +114,7 @@ export async function onRequestPost({
   if (!code) return json({ error: "code_required" }, 400);
   if (!clinic_token) return json({ error: "clinic_token_required" }, 400);
 
-  const { valid, clinicName } = await verifyClinicToken(clinic_token, adminSecret);
+  const { valid, clinicName, clinicId } = await verifyClinicToken(clinic_token, adminSecret);
   if (!valid) {
     console.error("Invalid or expired clinic token");
     return json({ error: "invalid_clinic_token" }, 401);
@@ -150,6 +151,7 @@ export async function onRequestPost({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          clinic_id: clinicId,
           clinic_name: clinicName,
           access_token: tokenData.access_token,
           connected_at: new Date().toISOString(),
@@ -160,7 +162,7 @@ export async function onRequestPost({
       // Nao falha o request — a conexao Meta foi bem-sucedida
     }
   } else {
-    console.log("WhatsApp Business autorizado para clinica:", clinicName);
+    console.log("WhatsApp Business autorizado para clinica:", clinicName, clinicId);
   }
 
   return json({ ok: true });

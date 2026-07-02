@@ -54,6 +54,7 @@ export async function onRequestGet({
   const url = new URL(request.url);
   const secret = url.searchParams.get("secret");
   const clinicName = url.searchParams.get("clinic")?.trim();
+  const clinicId = url.searchParams.get("id")?.trim().toLowerCase();
   const days = Math.min(
     Math.max(parseInt(url.searchParams.get("days") ?? "30", 10), 1),
     365
@@ -70,8 +71,17 @@ export async function onRequestGet({
     );
   }
 
+  if (!clinicId) {
+    return new Response(
+      JSON.stringify({ error: "Parametro 'id' e obrigatorio (ex: clinica_werneck)" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   const expiresAt = Math.floor(Date.now() / 1000) + days * 86400;
-  const payload = toBase64Url(JSON.stringify({ c: clinicName, exp: expiresAt }));
+  const payload = toBase64Url(
+    JSON.stringify({ c: clinicName, id: clinicId, exp: expiresAt })
+  );
   const signature = await hmacSign(payload, env.ADMIN_SECRET);
   const token = `${payload}.${signature}`;
   const link = `https://dizei.me/?token=${encodeURIComponent(token)}`;
@@ -82,7 +92,7 @@ export async function onRequestGet({
     .replace(".000Z", " UTC");
 
   return new Response(
-    JSON.stringify({ clinic: clinicName, link, expires_at: expiresDisplay, token }, null, 2),
+    JSON.stringify({ clinic: clinicName, clinic_id: clinicId, link, expires_at: expiresDisplay, token }, null, 2),
     { headers: { "Content-Type": "application/json" } }
   );
 }
