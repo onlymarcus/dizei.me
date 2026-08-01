@@ -11,4 +11,4 @@ export const commercialWhatsappHref =
 export const commercialWhatsappDisplay = "+55 81 99915-1979";
 
 export const calendarEmbedUrl =
-  "https://calendar.google.com/calendar/embed?src=61a30ff6ddf982134fa08cfc7a00e64c846c17b9e7d489f65f4982efbd636557%40group.calendar.google.com&ctz=America%2FRecife";
+  "https://calendar.google.com/calendar/embed?src=0a4552e04090361051ec39459809ea8f6d955e9e19595cf54c144326f3d3b0e1%40group.calendar.google.com&ctz=America%2FRecife";
