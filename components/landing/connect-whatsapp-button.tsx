@@ -14,6 +14,7 @@ function buildOauthUrl(clinicToken: string) {
   const extras = JSON.stringify({
     setup: {},
     featurize: { messaging_product: "whatsapp" },
+    feature: "app_only_install",
   });
   return (
     "https://www.facebook.com/dialog/oauth" +
