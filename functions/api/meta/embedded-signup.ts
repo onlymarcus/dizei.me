@@ -1,7 +1,8 @@
 // Cloudflare Pages Function — POST /api/meta/embedded-signup
 //
 // Valida o token da clinica, troca o authorization code por um access token
-// via Meta Graph API e (futuro) envia para o n8n para configuracao do workspace.
+// via Meta Graph API, inscreve o app na WABA (subscribed_apps) e envia os
+// dados para o n8n para configuracao do workspace.
 //
 // Variaveis de ambiente necessarias no Cloudflare:
 //   META_APP_ID            — App ID da Meta
@@ -26,6 +27,8 @@ interface PagesContext {
 interface RequestBody {
   code: string;
   clinic_token: string;
+  waba_id?: string | null;
+  phone_number_id?: string | null;
 }
 
 interface MetaTokenResponse {
@@ -109,7 +112,7 @@ export async function onRequestPost({
     return json({ error: "invalid_json" }, 400);
   }
 
-  const { code, clinic_token } = body;
+  const { code, clinic_token, waba_id, phone_number_id } = body;
 
   if (!code) return json({ error: "code_required" }, 400);
   if (!clinic_token) return json({ error: "clinic_token_required" }, 400);
@@ -144,6 +147,40 @@ export async function onRequestPost({
     return json({ error: "token_exchange_failed", detail }, 502);
   }
 
+  // Inscreve o app na WABA para que o webhook (ja configurado no nivel do app)
+  // passe a receber eventos dessa clinica especifica.
+  let wabaSubscribed = false;
+  if (waba_id) {
+    try {
+      const subscribeUrl = `https://graph.facebook.com/${apiVersion}/${waba_id}/subscribed_apps`;
+      const subscribeRes = await fetch(subscribeUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${tokenData.access_token}`,
+        },
+      });
+      const subscribeData = (await subscribeRes.json().catch(() => null)) as
+        | { success?: boolean; error?: { message: string } }
+        | null;
+      wabaSubscribed = Boolean(subscribeData?.success);
+      if (!wabaSubscribed) {
+        console.error(
+          "Falha ao inscrever app na WABA:",
+          waba_id,
+          subscribeData?.error?.message ?? `status ${subscribeRes.status}`
+        );
+      }
+    } catch (err) {
+      console.error("Erro de rede ao inscrever app na WABA:", waba_id, err);
+    }
+  } else {
+    console.warn(
+      "waba_id ausente no signup de",
+      clinicName,
+      "- app nao foi inscrito na WABA. Webhook nao recebera eventos desta clinica ate isso ser feito manualmente."
+    );
+  }
+
   // Envia para o n8n quando o webhook estiver configurado
   if (env.N8N_WEBHOOK_URL) {
     try {
@@ -154,6 +191,8 @@ export async function onRequestPost({
           clinic_id: clinicId,
           clinic_name: clinicName,
           access_token: tokenData.access_token,
+          waba_id: waba_id ?? null,
+          phone_number_id: phone_number_id ?? null,
           connected_at: new Date().toISOString(),
         }),
       });
@@ -165,5 +204,5 @@ export async function onRequestPost({
     console.log("WhatsApp Business autorizado para clinica:", clinicName, clinicId);
   }
 
-  return json({ ok: true });
+  return json({ ok: true, waba_subscribed: wabaSubscribed });
 }

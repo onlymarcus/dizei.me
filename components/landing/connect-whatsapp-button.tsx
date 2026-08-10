@@ -106,11 +106,58 @@ export function ConnectWhatsappButton({
   const [clinicToken, setClinicToken] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const signupDataRef = useRef<{ wabaId: string | null; phoneNumberId: string | null }>({
+    wabaId: null,
+    phoneNumberId: null,
+  });
 
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
+  }, []);
+
+  // Captures waba_id/phone_number_id from Meta's WA_EMBEDDED_SIGNUP postMessage.
+  // These never come through the OAuth redirect — only through this session-logging event.
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (
+        event.origin !== "https://www.facebook.com" &&
+        event.origin !== "https://web.facebook.com"
+      ) {
+        return;
+      }
+
+      let payload: unknown;
+      try {
+        payload =
+          typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+      } catch {
+        return;
+      }
+
+      if (
+        !payload ||
+        typeof payload !== "object" ||
+        (payload as { type?: string }).type !== "WA_EMBEDDED_SIGNUP"
+      ) {
+        return;
+      }
+
+      const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+      const wabaId = data.waba_id;
+      const phoneNumberId = data.phone_number_id;
+
+      if (typeof wabaId === "string" && wabaId) {
+        signupDataRef.current.wabaId = wabaId;
+      }
+      if (typeof phoneNumberId === "string" && phoneNumberId) {
+        signupDataRef.current.phoneNumberId = phoneNumberId;
+      }
+    }
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, []);
 
   useEffect(() => {
@@ -154,7 +201,12 @@ export function ConnectWhatsappButton({
       const res = await fetch("/api/meta/embedded-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, clinic_token: token }),
+        body: JSON.stringify({
+          code,
+          clinic_token: token,
+          waba_id: signupDataRef.current.wabaId,
+          phone_number_id: signupDataRef.current.phoneNumberId,
+        }),
       });
       if (!res.ok) {
         const body = await res.text().catch(() => "(sem corpo)");
