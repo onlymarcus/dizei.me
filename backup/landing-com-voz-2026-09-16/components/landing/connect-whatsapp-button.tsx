@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { trackEvent } from "@/lib/meta-pixel";
 import { commercialWhatsappHref } from "@/lib/site-config";
 
 type SignupStatus = "idle" | "loading" | "authorizing" | "success" | "error";
@@ -213,10 +212,6 @@ export function ConnectWhatsappButton({
         const body = await res.text().catch(() => "(sem corpo)");
         console.error("[Dizei] Backend erro:", res.status, body);
       }
-      if (res.ok) {
-        // Clinica concluiu o Embedded Signup — a conversao mais forte do site.
-        trackEvent("Lead", { customData: { content_name: "embedded_signup" } });
-      }
       setStatus(res.ok ? "success" : "error");
     } catch (err) {
       console.error("[Dizei] Falha ao chamar backend:", err);
@@ -291,7 +286,6 @@ export function ConnectWhatsappButton({
           href={commercialWhatsappHref}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => trackEvent("Lead")}
           className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-8 py-4 text-base font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-emerald-700"
         >
           {t.contactCta}

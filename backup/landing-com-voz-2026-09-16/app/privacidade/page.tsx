@@ -30,19 +30,15 @@ const sections = [
     body: "Ao conectar o WhatsApp Business pela janela oficial da Meta (Embedded Signup), a clinica concede ao Dizei um token de acesso que permite enviar e receber mensagens no canal autorizado. Esse token e armazenado de forma segura e utilizado exclusivamente para operar o atendimento contratado. O Dizei nao solicita senha, codigo de verificacao SMS ou acesso direto as credenciais da conta Meta. A autorizacao pode ser revogada a qualquer momento pela propria conta Meta Business da clinica.",
   },
   {
-    title: "5. Cookies e medicao de anuncios",
-    body: "Este site usa o Pixel da Meta e a API de Conversoes para medir o resultado de campanhas publicitarias no Facebook e no Instagram. Registramos eventos como visualizacao de pagina, clique nos botoes de contato do WhatsApp e conclusao da conexao do WhatsApp Business, junto com cookies da Meta (_fbp e _fbc), endereco IP, identificador do navegador e a pagina de origem do evento. Parte desses eventos e enviada do nosso servidor diretamente para a Meta. Nao enviamos conteudo de conversas, dados de saude ou informacoes de pacientes por esse canal. O visitante pode bloquear esses cookies nas configuracoes do navegador ou pelas preferencias de anuncios da propria conta Meta.",
-  },
-  {
-    title: "6. Dados sensiveis",
+    title: "5. Dados sensiveis",
     body: "Quando o atendimento envolver saude, as informacoes podem ter natureza sensivel. O Dizei deve ser usado pela clinica de forma compativel com a LGPD e com as regras aplicaveis ao seu setor.",
   },
   {
-    title: "7. Retencao e seguranca",
+    title: "6. Retencao e seguranca",
     body: "Mantemos dados pelo tempo necessario para prestar o servico, cumprir obrigacoes legais, resolver problemas e apoiar a operacao da clinica. Adotamos controles tecnicos e organizacionais para proteger as informacoes, incluindo tokens de acesso e identificadores de conta.",
   },
   {
-    title: "8. Direitos do titular",
+    title: "7. Direitos do titular",
     body: "O titular dos dados pode solicitar acesso, correcao, exclusao, revisao ou informacoes sobre o uso de seus dados, conforme previsto na legislacao aplicavel.",
   },
 ];
@@ -63,7 +59,7 @@ export default function PrivacyPage() {
             demonstracoes, atendimento por IA, triagem e agendamento.
           </p>
           <p className="mt-3 text-sm text-slate-500">
-            CNPJ: {companyCnpj}. Ultima atualizacao: 16 de setembro de 2026.
+            CNPJ: {companyCnpj}. Ultima atualizacao: 18 de junho de 2026.
           </p>
         </div>
       </section>

@@ -1,10 +1,13 @@
 import { ConnectWhatsappButton } from "@/components/landing/connect-whatsapp-button";
-import { TrackedLink } from "@/components/landing/tracked-link";
+import { StartDemoButton } from "@/components/landing/start-demo-button";
 import { ArrowIcon, CheckIcon } from "@/components/landing/ui-icons";
+import { VoiceDemo } from "@/components/landing/voice-demo";
 import {
   commercialWhatsappDisplay,
   commercialWhatsappHref,
   companyCnpj,
+  demoPhoneDisplay,
+  demoPhoneHref,
   demoWhatsappDisplay,
   demoWhatsappHref,
 } from "@/lib/site-config";
@@ -13,25 +16,25 @@ type Locale = "pt" | "en";
 
 const COPY = {
   pt: {
-    testByWhatsapp: "Testar pelo WhatsApp",
-    heroBadge: "Demonstracao ao vivo no WhatsApp",
+    testByPhone: "Teste por telefone",
+    heroBadge: "Demonstracao ao vivo em dizei.me",
     heroHeading: "Veja uma IA agendando pacientes ao vivo",
     heroParagraph:
-      "Mande uma mensagem para o WhatsApp da demonstracao, peca uma consulta como se fosse paciente e veja a IA fazer a triagem e marcar o horario na agenda da clinica.",
-    channelsKicker: "Canal de teste da IA",
+      "Clique para conversar com a IA dentro da pagina, peca uma consulta e acompanhe o agendamento aparecendo na agenda em tempo real. Se preferir, teste tambem pelo telefone ou WhatsApp da demonstracao.",
+    channelsKicker: "Canais de teste da IA",
+    phoneLabel: "Telefone",
     whatsappLabel: "WhatsApp da IA",
     channelsParagraph:
-      "Fale com o agente de IA da demonstracao como se fosse um paciente: descreva o motivo do contato, escolha um horario e acompanhe a confirmacao do agendamento.",
-    channelsNote:
-      "A demonstracao aberta acontece pelo WhatsApp. O atendimento por voz ao telefone e em mais de 30 idiomas faz parte do produto e e configurado na implantacao da sua clinica.",
-    testViaWhatsapp: "Testar pelo WhatsApp agora",
+      "Esses canais conectam voce ao agente de IA da demonstracao. Fale como paciente, escolha um horario e veja o compromisso aparecer na agenda.",
+    testOnPageNow: "Testar na pagina agora",
+    testViaWhatsapp: "Testar pelo WhatsApp",
     cardKicker: "Teste em menos de 2 minutos",
     cardSteps: [
-      "Abra o WhatsApp da demonstracao",
+      "Clique para falar com a IA",
       "Peca um horario de consulta",
-      "Veja a IA confirmar o agendamento",
+      "Acompanhe a agenda ao vivo",
     ],
-    cardFooter: "Seu paciente escreve. A IA atende. A agenda preenche sozinha.",
+    cardFooter: "Seu paciente fala. A IA atende. A agenda preenche sozinha.",
     aboutKicker: "O que e o Dizei",
     aboutHeading:
       "Uma recepcao inteligente para clinicas que precisam responder e agendar mais rapido.",
@@ -79,7 +82,7 @@ const COPY = {
     ctaParagraph:
       "Podemos configurar uma demonstracao com o nome, voz e agenda da sua clinica.",
     ctaImplement: "Quero implementar o Dizei",
-    ctaTestNow: "Testar pelo WhatsApp",
+    ctaTestNow: "Testar agora na pagina",
     ctaFooter: "Atendimento comercial humano para adaptar o Dizei a rotina da sua clinica. Contato comercial:",
     whatsappSectionKicker: "WhatsApp Business",
     whatsappSectionHeading: "Conecte o canal oficial da sua clinica",
@@ -98,25 +101,25 @@ const COPY = {
     footerContact: "Contato comercial",
   },
   en: {
-    testByWhatsapp: "Test via WhatsApp",
-    heroBadge: "Live demo on WhatsApp",
+    testByPhone: "Test by phone",
+    heroBadge: "Live demo at dizei.me",
     heroHeading: "Watch an AI schedule patients live",
     heroParagraph:
-      "Message the demo WhatsApp number, request an appointment as if you were a patient, and watch the AI run intake and book the slot on the clinic's calendar.",
-    channelsKicker: "AI testing channel",
+      "Click to talk to the AI right on this page, request an appointment, and watch it appear on the calendar in real time. You can also test it by phone or via the demo WhatsApp.",
+    channelsKicker: "AI testing channels",
+    phoneLabel: "Phone",
     whatsappLabel: "AI WhatsApp",
     channelsParagraph:
-      "Talk to the demo AI agent as if you were a patient: describe why you are reaching out, pick a time, and follow the booking confirmation.",
-    channelsNote:
-      "The open demo runs on WhatsApp. Voice support over the phone and in 30+ languages is part of the product and is configured during your clinic's rollout.",
-    testViaWhatsapp: "Test via WhatsApp now",
+      "These channels connect you to the demo AI agent. Speak as a patient, pick a time, and watch the appointment show up on the calendar.",
+    testOnPageNow: "Test on this page now",
+    testViaWhatsapp: "Test via WhatsApp",
     cardKicker: "Test it in under 2 minutes",
     cardSteps: [
-      "Open the demo WhatsApp",
+      "Click to talk to the AI",
       "Request an appointment time",
-      "Watch the AI confirm the booking",
+      "Watch the calendar update live",
     ],
-    cardFooter: "Your patient writes. The AI handles it. The calendar fills itself.",
+    cardFooter: "Your patient talks. The AI handles it. The calendar fills itself.",
     aboutKicker: "What is Dizei",
     aboutHeading:
       "A smart front desk for clinics that need to respond and book faster.",
@@ -163,7 +166,7 @@ const COPY = {
     ctaParagraph:
       "We can set up a demo using your clinic's name, voice, and calendar.",
     ctaImplement: "I want to implement Dizei",
-    ctaTestNow: "Test via WhatsApp",
+    ctaTestNow: "Test now on this page",
     ctaFooter: "Human sales support to adapt Dizei to your clinic's routine. Sales contact:",
     whatsappSectionKicker: "WhatsApp Business",
     whatsappSectionHeading: "Connect your clinic's official channel",
@@ -197,15 +200,12 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
             >
               Dizei
             </a>
-            <TrackedLink
-              event="Contact"
-              href={demoWhatsappHref}
-              target="_blank"
-              rel="noreferrer"
+            <a
+              href={demoPhoneHref}
               className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white/85 transition hover:bg-white/10"
             >
-              {t.testByWhatsapp}
-            </TrackedLink>
+              {t.testByPhone}
+            </a>
           </header>
 
           <div
@@ -229,13 +229,23 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
                   {t.channelsKicker}
                 </p>
-                <div className="mt-3">
-                  <TrackedLink
-                    event="Contact"
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <a
+                    href={demoPhoneHref}
+                    className="rounded-2xl border border-white/12 bg-white/8 p-4 transition hover:bg-white/12"
+                  >
+                    <span className="text-sm font-semibold text-slate-300">
+                      {t.phoneLabel}
+                    </span>
+                    <span className="mt-1 block font-[var(--font-space-grotesk)] text-2xl font-semibold text-emerald-300">
+                      {demoPhoneDisplay}
+                    </span>
+                  </a>
+                  <a
                     href={demoWhatsappHref}
                     target="_blank"
                     rel="noreferrer"
-                    className="block rounded-2xl border border-white/12 bg-white/8 p-4 transition hover:bg-white/12"
+                    className="rounded-2xl border border-white/12 bg-white/8 p-4 transition hover:bg-white/12"
                   >
                     <span className="text-sm font-semibold text-slate-300">
                       {t.whatsappLabel}
@@ -243,27 +253,24 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
                     <span className="mt-1 block font-[var(--font-space-grotesk)] text-2xl font-semibold text-emerald-300">
                       {demoWhatsappDisplay}
                     </span>
-                  </TrackedLink>
+                  </a>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-slate-300">
                   {t.channelsParagraph}
                 </p>
-                <p className="mt-3 text-sm leading-6 text-slate-400">
-                  {t.channelsNote}
-                </p>
               </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <TrackedLink
-                  event="Contact"
+                <StartDemoButton>{t.testOnPageNow}</StartDemoButton>
+                <a
                   href={demoWhatsappHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-400 px-7 py-4 text-base font-semibold text-slate-950 shadow-[0_18px_45px_rgba(16,185,129,0.24)] transition hover:-translate-y-0.5 hover:bg-emerald-300 sm:w-auto"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/16 bg-white/10 px-7 py-4 text-base font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/16 sm:w-auto"
                 >
                   {t.testViaWhatsapp}
                   <ArrowIcon />
-                </TrackedLink>
+                </a>
               </div>
             </div>
 
@@ -293,6 +300,8 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
           </div>
         </div>
       </section>
+
+      <VoiceDemo locale={locale} />
 
       <section className="bg-white py-14 sm:py-16">
         <div className="shell grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
@@ -410,8 +419,7 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <TrackedLink
-              event="Lead"
+            <a
               href={commercialWhatsappHref}
               target="_blank"
               rel="noreferrer"
@@ -419,16 +427,8 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
             >
               {t.ctaImplement}
               <ArrowIcon />
-            </TrackedLink>
-            <TrackedLink
-              event="Contact"
-              href={demoWhatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-400 px-8 py-4 text-base font-semibold text-slate-950 shadow-soft transition hover:-translate-y-0.5 hover:bg-emerald-300 sm:w-auto"
-            >
-              {t.ctaTestNow}
-            </TrackedLink>
+            </a>
+            <StartDemoButton>{t.ctaTestNow}</StartDemoButton>
           </div>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-slate-500">
             {t.ctaFooter} {commercialWhatsappDisplay}.
@@ -484,14 +484,9 @@ export function HomePage({ locale = "pt" }: { locale?: Locale }) {
             </a>
             <a href="/privacidade.html">{t.footerPrivacy}</a>
             <a href="/termos.html">{t.footerTerms}</a>
-            <TrackedLink
-              event="Lead"
-              href={commercialWhatsappHref}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href={commercialWhatsappHref} target="_blank" rel="noreferrer">
               {t.footerContact}
-            </TrackedLink>
+            </a>
           </div>
         </div>
       </footer>
